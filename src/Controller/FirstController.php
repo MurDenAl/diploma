@@ -5,6 +5,8 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Entity\Categories;
+use App\Repository\CategoriesRepository;
 
 class FirstController extends AbstractController
 {
@@ -72,5 +74,14 @@ class FirstController extends AbstractController
     public function compare(): Response
     {
         return $this->render('catalog/compare.html.twig');
+    }
+
+    public function menu(CategoriesRepository $doctrine)
+    {
+//        $categories = $doctrine->findAll();
+        $categories = $doctrine->findByExampleField();
+        dump($categories);
+        die;
+        return $this->render('catalog/menu.html.twig', array('categories' => $categories));
     }
 }
