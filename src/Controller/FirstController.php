@@ -5,14 +5,17 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Repository\CategoriesRepository;
 
 class FirstController extends AbstractController
 {
     /**
      * @Route("/", name="app_homepage")
      */
-    public function homepage(): Response
+    public function homepage(CategoriesRepository $doctrine): Response
     {
+        //$categories = $doctrine->findByExampleField();
+        //dd($categories);
         return $this->render('catalog/index.html.twig');
     }
 
@@ -32,13 +35,13 @@ class FirstController extends AbstractController
         return $this->render('catalog/about.html.twig');
     }
 
-    /**
-     * @Route("/login")
-     */
-    public function login(): Response
-    {
-        return $this->render('catalog/login.html.twig');
-    }
+//    /**
+//     * @Route("/login")
+//     */
+//    public function login(): Response
+//    {
+//        return $this->render('catalog/login.html.twig');
+//    }
 
     /**
      * @Route("/register")
@@ -72,5 +75,11 @@ class FirstController extends AbstractController
     public function compare(): Response
     {
         return $this->render('catalog/compare.html.twig');
+    }
+
+    public function menu(CategoriesRepository $doctrine)
+    {
+        $categories = $doctrine->findByExampleField();
+        return $this->render('catalog/menu.html.twig', array('categories' => $categories));
     }
 }

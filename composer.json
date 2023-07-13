@@ -17,6 +17,7 @@
         "symfony/flex": "^2",
         "symfony/framework-bundle": "6.3.*",
         "symfony/runtime": "6.3.*",
+        "symfony/security-bundle": "6.3.*",
         "symfony/twig-bundle": "6.3.*",
         "symfony/yaml": "6.3.*",
         "twig/extra-bundle": "^2.12|^3.0",
@@ -67,10 +68,14 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "6.3.*"
+            "require": "6.3.*",
+            "docker": true
         }
     },
     "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "^3.4",
+        "fakerphp/faker": "^1.23",
+        "symfony/maker-bundle": "^1.50",
         "symfony/stopwatch": "6.3.*",
         "symfony/web-profiler-bundle": "6.3.*"
     }
