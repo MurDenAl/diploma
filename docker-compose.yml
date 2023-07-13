@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  database:
+  db:
     image: mysql
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
@@ -21,7 +21,8 @@ services:
       - .:/var/www/html
 
   nginx:
-    image: nginx
+    build:
+      dockerfile: build/nginx/Dockerfile
     ports:
       - "83:80"
     volumes:
