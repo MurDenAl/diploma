@@ -16,14 +16,6 @@ class Offers
     #[ORM\Column(length: 255)]
     private ?string $price = null;
 
-    #[ORM\ManyToOne(inversedBy: 'offers')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Products $product = null;
-
-    #[ORM\ManyToOne(inversedBy: 'offers')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Merchants $merchant = null;
-
     public function getId(): ?int
     {
         return $this->id;
@@ -37,30 +29,6 @@ class Offers
     public function setPrice(string $price): static
     {
         $this->price = $price;
-
-        return $this;
-    }
-
-    public function getProduct(): ?Products
-    {
-        return $this->product;
-    }
-
-    public function setProduct(?Products $product): static
-    {
-        $this->product = $product;
-
-        return $this;
-    }
-
-    public function getMerchant(): ?Merchants
-    {
-        return $this->merchant;
-    }
-
-    public function setMerchant(?Merchants $merchant): static
-    {
-        $this->merchant = $merchant;
 
         return $this;
     }
