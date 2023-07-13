@@ -1,21 +1,28 @@
 version: '3'
 
 services:
-###> doctrine/doctrine-bundle ###
   database:
-    image: postgres:${POSTGRES_VERSION:-15}-alpine
+    image: mysql
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-app}
-      # You should definitely change the password in production
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
-      POSTGRES_USER: ${POSTGRES_USER:-app}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      DB_NAME: market
     volumes:
       - database_data:/var/lib/postgresql/data:rw
-      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
-      # - ./docker/db/data:/var/lib/postgresql/data:rw
-###< doctrine/doctrine-bundle ###
+
+  redis:
+    image: redis
+
+  app:
+    build: Dockerfile
+    volumes:
+      - .:/var/www/html
+
+  nginx:
+    image: nginx
+    ports:
+      - "83:80"
+    volumes:
+      - ./apps/platform/build/nginx/default.conf:/etc/nginx/templates/default.conf.template
 
 volumes:
-###> doctrine/doctrine-bundle ###
   database_data:
-###< doctrine/doctrine-bundle ###
