@@ -1,8 +1,8 @@
 version: '3'
 
 services:
-  database:
-    image: mysql
+  db:
+    image: mysql:8.0.33
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: market
@@ -21,7 +21,8 @@ services:
       - .:/var/www/html
 
   nginx:
-    image: nginx
+    build:
+      dockerfile: build/nginx/Dockerfile
     ports:
       - "83:80"
     volumes:
