@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Merchants;
 use App\Entity\Offers;
 use App\Entity\Products;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -17,28 +18,39 @@ class CategoryFixtures extends Fixture
         for ($i = 0; $i < 10; $i++) {
             $category = new Categories();
             $category->setName($faker->word);
-            $product = new Products();
-            $product->setName($faker->word);
-            $manager->persist($product);
-            $category->addProduct($product);
-            $offer = new Offers();
-            $offer->setPrice($faker->numberBetween(1000, 100000));
-            $offer->setProduct($product);
-            $manager->persist($offer);
-            $product = new Products();
-            $product->setName($faker->word);
-            $manager->persist($product);
-            $category->addProduct($product);
             $manager->persist($category);
+            $merchant = new Merchants();
+            $merchant->setName($faker->name);
+            $manager->persist($merchant);
+            $product = new Products();
+            $product->setName($faker->word);
+            $product->setCategory($category);
+            $manager->persist($product);
+            for ($c = 0; $c < 3; $c++) {
+                $offer = new Offers();
+                $offer->setPrice($faker->numberBetween(1000, 100000));
+                $offer->setProduct($product);
+                $offer->setMerchant($merchant);
+                $manager->persist($offer);
+            }
+            $manager->flush();
+            if ($faker->boolean(60)) {
+                $subcategory = new Categories();
+                $subcategory->setName($faker->word);
+                $subcategory->setParentId($category->getId());
+                $manager->persist($subcategory);
+                //$manager->flush();
+                $product = new Products();
+                $product->setName($faker->word);
+                $product->setCategory($subcategory);
+                $manager->persist($product);
+                $offer = new Offers();
+                $offer->setPrice($faker->numberBetween(1000, 100000));
+                $offer->setProduct($product);
+                $offer->setMerchant($merchant);
+                $manager->persist($offer);
+                $manager->flush();
+            }
         }
-
-        //for ($i = 0; $i < 4; $i++) {
-        //    $category = new Categories();
-        //    $category->setName('Products');
-        //    $category->setParentId(rand(150, 160));
-        //    $manager->persist($category);
-        //}
-
-        $manager->flush();
     }
 }

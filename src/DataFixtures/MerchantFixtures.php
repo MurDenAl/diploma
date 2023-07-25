@@ -11,13 +11,13 @@ class MerchantFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        $faker = Factory::create();
-        for ($i = 0; $i < 5; $i++) {
-            $category = new Merchants();
-            $category->setName($faker->name);
-            $manager->persist($category);
-        }
+        //$faker = Factory::create();
+        //for ($i = 0; $i < 5; $i++) {
+        //    $category = new Merchants();
+        //    $category->setName($faker->name);
+        //    $manager->persist($category);
+        //}
 
-        $manager->flush();
+        //$manager->flush();
     }
 }

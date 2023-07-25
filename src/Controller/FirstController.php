@@ -2,7 +2,11 @@
 
 namespace App\Controller;
 
+use App\Repository\OffersRepository;
+use App\Repository\ProductsRepository;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\CategoriesRepository;
@@ -54,9 +58,18 @@ class FirstController extends AbstractController
     /**
      * @Route("/catalog")
      */
-    public function catalog(): Response
+    public function catalog(OffersRepository $productsRepository, Request $request, PaginatorInterface $paginator): Response
     {
-        return $this->render('catalog/catalog.html.twig');
+        $products = $productsRepository->findAllQuery();
+
+        $pagination = $paginator->paginate(
+            $products, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            8 /*limit per page*/
+        );
+        $pagination->setTemplate('catalog/pagination.html.twig');
+
+        return $this->render('catalog/catalog.html.twig', array('pagination' => $pagination));
     }
 
     /**

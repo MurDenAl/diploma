@@ -45,4 +45,12 @@ class OffersRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+
+    public function findAllQuery()
+    {
+        return $this->createQueryBuilder('c')
+//        ->getQuery()
+            ;
+    }
+
 }
