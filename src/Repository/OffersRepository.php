@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Offers;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -46,11 +47,52 @@ class OffersRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-    public function findAllQuery()
+    public function createData(): \Doctrine\ORM\QueryBuilder
     {
-        return $this->createQueryBuilder('c')
-//        ->getQuery()
+        $data = $this->createQueryBuilder('c');
+
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        //    $prices = explode(';', $_POST['price']);
+
+            $data
+                ->andWhere('c.price >= 30')
+        //        ->andWhere('c.price >= :priceMin' and 'c.price <= :priceMax')
+        //        ->setParameter('priceMin', "")
+        //        ->setParameter('priceMax', "")
             ;
+        }
+        return $data;
+    }
+
+    public function findAllQuery(\Doctrine\ORM\QueryBuilder $data = NULL)
+    {
+        //$data = $this->createQueryBuilder('c');
+
+        //if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        //    $prices = explode(';', $_POST['price']);
+
+        //    $data
+        //    ->andWhere('c.price >= 30')
+        //        ->andWhere('c.price >= :priceMin' and 'c.price <= :priceMax')
+        //        ->setParameter('priceMin', "")
+        //        ->setParameter('priceMax', "")
+        //    ;
+        //}
+
+        if ($data == NULL) {
+            $data = $this->createQueryBuilder('c');
+        }
+
+        if (!isset($_GET['sortBy'])) {
+            return $data;
+        } else {
+            switch ($_GET['sortBy']) {
+                case 'priceDec':
+                    return $data->orderBy("c.price", '');
+                case 'priceInc':
+                    return $data->orderBy("c.price", 'DESC');
+            }
+        }
     }
 
 }

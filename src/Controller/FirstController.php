@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Repository\OffersRepository;
-use App\Repository\ProductsRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -60,7 +59,9 @@ class FirstController extends AbstractController
      */
     public function catalog(OffersRepository $productsRepository, Request $request, PaginatorInterface $paginator): Response
     {
-        $products = $productsRepository->findAllQuery();
+
+
+        $products = $productsRepository->findAllQuery($productsRepository->createData());
 
         $pagination = $paginator->paginate(
             $products, /* query NOT result */
@@ -68,7 +69,7 @@ class FirstController extends AbstractController
             8 /*limit per page*/
         );
         $pagination->setTemplate('catalog/pagination.html.twig');
-
+        //dd($request->query);
         return $this->render('catalog/catalog.html.twig', array('pagination' => $pagination));
     }
 

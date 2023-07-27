@@ -28,7 +28,7 @@ class CategoryFixtures extends Fixture
             $manager->persist($product);
             for ($c = 0; $c < 3; $c++) {
                 $offer = new Offers();
-                $offer->setPrice($faker->numberBetween(1000, 100000));
+                $offer->setPrice($faker->numberBetween(7, 50));
                 $offer->setProduct($product);
                 $offer->setMerchant($merchant);
                 $manager->persist($offer);
@@ -45,7 +45,7 @@ class CategoryFixtures extends Fixture
                 $product->setCategory($subcategory);
                 $manager->persist($product);
                 $offer = new Offers();
-                $offer->setPrice($faker->numberBetween(1000, 100000));
+                $offer->setPrice($faker->numberBetween(7, 50));
                 $offer->setProduct($product);
                 $offer->setMerchant($merchant);
                 $manager->persist($offer);
