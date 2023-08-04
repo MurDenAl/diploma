@@ -47,40 +47,39 @@ class OffersRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-    public function createData(): \Doctrine\ORM\QueryBuilder
+    public function findAllQuery($category = NULL, $childCategory = NULL)
     {
-        $data = $this->createQueryBuilder('c');
-
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        //    $prices = explode(';', $_POST['price']);
-
-            $data
-                ->andWhere('c.price >= 30')
-        //        ->andWhere('c.price >= :priceMin' and 'c.price <= :priceMax')
-        //        ->setParameter('priceMin', "")
-        //        ->setParameter('priceMax', "")
+        if ($category) {
+            $data = $this->createQueryBuilder('c')
+                ->innerJoin('c.product', 'a')
+                ->andWhere('a.category = :category')
+                ->setParameter('category', $category)
             ;
-        }
-        return $data;
-    }
-
-    public function findAllQuery(\Doctrine\ORM\QueryBuilder $data = NULL)
-    {
-        //$data = $this->createQueryBuilder('c');
-
-        //if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        //    $prices = explode(';', $_POST['price']);
-
-        //    $data
-        //    ->andWhere('c.price >= 30')
-        //        ->andWhere('c.price >= :priceMin' and 'c.price <= :priceMax')
-        //        ->setParameter('priceMin', "")
-        //        ->setParameter('priceMax', "")
-        //    ;
-        //}
-
-        if ($data == NULL) {
+            if (isset($childCategory)) {
+                $params = join(',', $childCategory);
+                $data
+                    ->orWhere("a.category IN ('$params')")
+                ;
+            }
+        } else {
             $data = $this->createQueryBuilder('c');
+        }
+
+        if (isset($_GET['price'])) {
+            $prices = explode(';', $_GET['price']);
+            $data
+                ->andWhere('c.price >= :priceMin')
+                ->andWhere('c.price <= :priceMax')
+                ->setParameter('priceMin', $prices[0])
+                ->setParameter('priceMax', $prices[1])
+            ;
+
+            if (isset($_GET['seller'])) {
+                $data
+                    ->andWhere("c.merchant = :merchant")
+                    ->setParameter('merchant', $_GET['seller'])
+                ;
+            }
         }
 
         if (!isset($_GET['sortBy'])) {
@@ -91,6 +90,10 @@ class OffersRepository extends ServiceEntityRepository
                     return $data->orderBy("c.price", '');
                 case 'priceInc':
                     return $data->orderBy("c.price", 'DESC');
+                case 'popDec':
+                    return $data->orderBy('c.id', '');
+                case 'popInc':
+                    return $data->orderBy('c.id', 'DESC');
             }
         }
     }

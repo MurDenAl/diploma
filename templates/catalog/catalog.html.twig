@@ -9,7 +9,7 @@
         <div class="Middle-header">
           <h1 class="Middle-title">Каталог</h1>
           <ul class="breadcrumbs Middle-breadcrumbs">
-            <li class="breadcrumbs-item"><a href="index.html.twig">Главная</a></li>
+            <li class="breadcrumbs-item"><a href="{{ path('app_homepage') }}">Главная</a></li>
             <li class="breadcrumbs-item breadcrumbs-item_current"><span>Каталог</span></li>
           </ul>
         </div>
@@ -23,23 +23,24 @@
               <strong class="Section-title">Фильтр</strong>
             </header>
             <div class="Section-columnContent">
-              <form class="form" {# action="#" method="post" #}>
+              <form class="form">
                 <div class="form-group">
                   <div class="range Section-columnRange">
-                    <input class="range-line" id="price" name="price" type="text" data-type="double" data-min="7" data-max="50" data-from="7" data-to="27"/>
+                    <input class="range-line" id="price" name="price" type="text" data-type="double" data-min="7" data-max="50" data-from="7" data-to="50" value="{{ app.request.query.get('price') }}"/>
                     <div class="range-price">Цена:&#32;
                       <div class="rangePrice"></div>
                     </div>
                   </div>
                 </div>
                 <div class="form-group">
-                  <input class="form-input form-input_full" id="title" name="title" type="text" placeholder="Название"/>
+                  <input class="form-input form-input_full" id="title" name="title" type="text" placeholder="Название" value="{{ app.request.query.get('title') }}"/>
                 </div>
                 <div class="form-group">
-                  <select class="form-select">
+                  <select name="seller" class="form-select">
                     <option selected="selected" disabled="disabled">Продавец</option>
-                    <option value="kkk">Kkkk</option>
-                    <option value="sdfsdf">sdfsdf</option>
+                    {% for merchant in merchants %}
+                      <option name="seller" value="{{ merchant.id }}">{{ merchant.name }}</option>
+                    {% endfor %}
                   </select>
                 </div>
                 <div class="form-group">
@@ -48,7 +49,7 @@
                   </label>
                 </div>
                 <div class="form-group">
-                  <div class="buttons"><a class="btn btn_square btn_dark btn_narrow" href="{{ path('app_first_catalog', { filter: '1111' }|merge(app.request.query.all)) }}">Применить</a>
+                  <div class="buttons"><input type="submit" value="Применить" class="btn btn_square btn_dark btn_narrow"/>
                   </div>
                 </div>
               </form>
@@ -59,28 +60,35 @@
           <div class="Sort">
             <div class="Sort-title">Сортировать по:
             </div>
-            <div class="Sort-variants"><a
-              {% if pagination.params.sortBy is defined and pagination.params.sortBy == 'priceInc' %}
-                class="Sort-sortBy Sort-sortBy_inc" href="{{ path('app_first_catalog', { sortBy: 'priceDec' }) }}"
-              {% elseif pagination.params.sortBy is defined and pagination.params.sortBy == 'priceDec' %}
-                class="Sort-sortBy Sort-sortBy_dec" href="{{ path('app_first_catalog', app.request.query.all|merge({'sortBy': 'priceInk'})) }}"
+            <div class="Sort-variants">{% set getParams = app.request.query.all %}<a
+              {% if app.request.query.all.sortBy is defined and app.request.query.all.sortBy == 'popInc' %}
+                class="Sort-sortBy Sort-sortBy_inc" href="{{ path('app_first_catalog', getParams|merge({ sortBy: 'popDec' })) }}"
+              {% elseif app.request.query.all.sortBy is defined and app.request.query.all.sortBy == 'popDec' %}
+                class="Sort-sortBy Sort-sortBy_dec" href="{{ path('app_first_catalog', getParams|merge({ sortBy: 'popInc' })) }}"
               {% else %}
-                class="Sort-sortBy" href="{{ path('app_first_catalog', { sortBy: 'priceDec' }|merge(app.request.query.all)) }}"
+                class="Sort-sortBy" href="{{ path('app_first_catalog', getParams|merge({ sortBy: 'popDec' })) }}"
+              {% endif %}>Популярности</a><a
+              {% if app.request.query.all.sortBy is defined and app.request.query.all.sortBy == 'priceInc' %}
+                class="Sort-sortBy Sort-sortBy_inc" href="{{ path('app_first_catalog', getParams|merge({ sortBy: 'priceDec' })) }}"
+              {% elseif app.request.query.all.sortBy is defined and app.request.query.all.sortBy == 'priceDec' %}
+                class="Sort-sortBy Sort-sortBy_dec" href="{{ path('app_first_catalog', getParams|merge({ sortBy: 'priceInc' })) }}"
+              {% else %}
+                class="Sort-sortBy" href="{{ path('app_first_catalog', getParams|merge({ sortBy: 'priceDec' })) }}"
               {% endif %}>Цене</a>
             </div>
           </div>
           <div class="Cards">
             {% for product in pagination %}
-              <div class="Card hide_md hide_1450"><a class="Card-picture" href="#"><img src="{{ asset('assets/img/content/home/card.jpg') }}" alt="card.jpg"/></a>
+              <div class="Card hide_md hide_1450"><a class="Card-picture" href="{{ path('app_first_show', {slug: product.id}) }}"><img src="{{ asset('assets/img/content/home/card.jpg') }}" alt="card.jpg"/></a>
                 <div class="Card-content">
-                  <strong class="Card-title"><a href="product.html">{{ product.getProduct.name }}</a>
+                  <strong class="Card-title"><a href="{{ path('app_first_show', {slug: product.id}) }}">{{ product.getProduct.name }}</a>
                   </strong>
                   <div class="Card-description">
                     <div class="Card-cost"><span class="Card-price">${{ product.price }}</span>
                     </div>
                     <div class="Card-category">Media / xbox
                     </div>
-                    <div class="Card-hover"><a class="Card-btn" href="#"><img src="{{ asset('assets/img/icons/card/bookmark.svg') }}" alt="bookmark.svg"/></a><a class="Card-btn" href="#"><img src="{{ asset('assets/img/icons/card/cart.svg') }}" alt="cart.svg"/></a><a class="Card-btn" href="#"><img src="{{ asset('assets/img/icons/card/change.svg') }}" alt="change.svg"/></a>
+                    <div class="Card-hover"><a class="Card-btn" href="{{ path('app_first_show', {slug: product.id}) }}"><img src="{{ asset('assets/img/icons/card/bookmark.svg') }}" alt="bookmark.svg"/></a><a class="Card-btn" href="#"><img src="{{ asset('assets/img/icons/card/cart.svg') }}" alt="cart.svg"/></a><a class="Card-btn" href="{{ path('app_first_compare') }}"><img src="{{ asset('assets/img/icons/card/change.svg') }}" alt="change.svg"/></a>
                     </div>
                   </div>
                 </div>

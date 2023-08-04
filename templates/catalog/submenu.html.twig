@@ -1,41 +1,16 @@
-{# Реализация с одним уровнем вложенности, как в вёрстке задания. #}
-
-<div class="CategoriesButton-submenu"><a class="CategoriesButton-link" href="#">
+<div class="CategoriesButton-submenu">
     {% for subcategory in category['childs'] %}
-        {% if loop.last %}
-            <div class="CategoriesButton-icon"><img src="assets/img/icons/departments/2.svg" alt="2.svg"/>
-            </div><span class="CategoriesButton-text">{{ subcategory['name'] }}</span></a>
+        {% if subcategory['childs'] is defined %}
+            <a class="CategoriesButton-link" href="{{ path('app_first_category', { category: subcategory['name'] }) }}">
+                <div class="CategoriesButton-icon"><img src="{{ asset('assets/img/icons/departments/1.svg') }}" alt="1.svg"/>
+                </div><span class="CategoriesButton-text">{{ subcategory['name'] }}</span>
+            </a>
+            {% include 'catalog/submenu.html.twig' with {'category': subcategory} %}
         {% else %}
-            <div class="CategoriesButton-icon"><img src="assets/img/icons/departments/1.svg" alt="1.svg"/>
-            </div><span class="CategoriesButton-text">{{ subcategory['name'] }}</span></a><a class="CategoriesButton-link" href="#">
+            <a class="CategoriesButton-link" href="{{ path('app_first_category', { category: subcategory['name'] }) }}">
+                <div class="CategoriesButton-icon"><img src="{{ asset('assets/img/icons/departments/1.svg') }}" alt="1.svg"/>
+                </div><span class="CategoriesButton-text">{{ subcategory['name'] }}</span>
+            </a>
         {% endif %}
     {% endfor %}
 </div>
-
-{# Реализация с несколькими уровнями вложенности - рекурсия.
-
-<div class="CategoriesButton-submenu"><a class="CategoriesButton-link" href="#">
-    {% for subcategory in category['childs'] %}
-        {% if loop.last %}
-            {% if subcategory['childs'] is defined %}
-                <div class="CategoriesButton-icon"><img src="assets/img/icons/departments/2.svg" alt="2.svg"/>
-                </div><span class="CategoriesButton-text">{{ subcategory['name'] }}</span></a>
-                {% include 'catalog/submenu.html.twig' with {'category': subcategory} %}
-            {% else %}
-                <div class="CategoriesButton-icon"><img src="assets/img/icons/departments/2.svg" alt="2.svg"/>
-                </div><span class="CategoriesButton-text">{{ subcategory['name'] }}</span></a>
-            {% endif %}
-        {% else %}
-            {% if subcategory['childs'] is defined %}
-                <div class="CategoriesButton-icon"><img src="assets/img/icons/departments/1.svg" alt="1.svg"/>
-                </div><span class="CategoriesButton-text">{{ subcategory['name'] }}</span></a><a class="CategoriesButton-link" href="#">
-                {% include 'catalog/submenu.html.twig' with {'category': subcategory} %}
-            {% else %}
-                <div class="CategoriesButton-icon"><img src="assets/img/icons/departments/1.svg" alt="1.svg"/>
-                </div><span class="CategoriesButton-text">{{ subcategory['name'] }}</span></a><a class="CategoriesButton-link" href="#">
-            {% endif %}
-        {% endif %}
-    {% endfor %}
-</div>
-
-#}

@@ -20,7 +20,7 @@ class CategoryFixtures extends Fixture
             $category->setName($faker->word);
             $manager->persist($category);
             $merchant = new Merchants();
-            $merchant->setName($faker->name);
+            $merchant->setName($faker->word);
             $manager->persist($merchant);
             $product = new Products();
             $product->setName($faker->word);

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\MerchantsRepository;
 use App\Repository\OffersRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,11 +16,10 @@ class FirstController extends AbstractController
     /**
      * @Route("/", name="app_homepage")
      */
-    public function homepage(CategoriesRepository $doctrine): Response
+    public function homepage(OffersRepository $offersRepository): Response
     {
-        //$categories = $doctrine->findByExampleField();
-        //dd($categories);
-        return $this->render('catalog/index.html.twig');
+        $offers = $offersRepository->findBy([], ['id' => 'ASC'], 8);
+        return $this->render('catalog/index.html.twig', array('offers' => $offers));
     }
 
     /**
@@ -51,17 +51,17 @@ class FirstController extends AbstractController
      */
     public function register(): Response
     {
-        return $this->render('catalog/register.html.twig');
+        return $this->render('catalog/account.html.twig');
     }
 
     /**
      * @Route("/catalog")
      */
-    public function catalog(OffersRepository $productsRepository, Request $request, PaginatorInterface $paginator): Response
+    public function catalog(OffersRepository $productsRepository, MerchantsRepository $merchantsRepository, Request $request, PaginatorInterface $paginator): Response
     {
 
-
-        $products = $productsRepository->findAllQuery($productsRepository->createData());
+        $merchants = $merchantsRepository->findAll();
+        $products = $productsRepository->findAllQuery();
 
         $pagination = $paginator->paginate(
             $products, /* query NOT result */
@@ -69,17 +69,49 @@ class FirstController extends AbstractController
             8 /*limit per page*/
         );
         $pagination->setTemplate('catalog/pagination.html.twig');
-        //dd($request->query);
-        return $this->render('catalog/catalog.html.twig', array('pagination' => $pagination));
+
+        return $this->render('catalog/catalog.html.twig', array('pagination' => $pagination, 'merchants' => $merchants));
     }
 
     /**
-     * @Route("/catalog/{slug}")
+     * @Route("/catalog/{category}")
      */
-    public function show($slug): Response
+    public function category($category, OffersRepository $offersRepository, MerchantsRepository $merchantsRepository, Request $request, PaginatorInterface $paginator, CategoriesRepository $categoriesRepository): Response
     {
+        $merchants = $merchantsRepository->findAll();
+        $currentCat = $categoriesRepository->findOneBy(['name' => $category])->getId();
+        $subcategories = $categoriesRepository->findBy(['parent_id' => $currentCat]);
+        $childCategory = NULL;
+        foreach ($subcategories as $value) {
+            $childCategory[] = $value->getId();
+        }
+
+        $offers = $offersRepository->findAllQuery($currentCat, $childCategory);
+
+        $pagination = $paginator->paginate(
+            $offers, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            8 /*limit per page*/
+        );
+        $pagination->setTemplate('catalog/pagination.html.twig');
+
+        return $this->render('catalog/category.html.twig', array('page' => $category, 'merchants' => $merchants, 'pagination' => $pagination));
+    }
+
+    /**
+     * @Route("/products/{slug}", name="app_first_show")
+     */
+    public function show($slug, OffersRepository $offersRepository): Response
+    {
+        $offer = $offersRepository->findOneBy(['id' => $slug]);
+        $product = $offer->getProduct();
+        $offers = $offersRepository->findBy(['product' => $product->getId()]);
+
         return $this->render('catalog/product.html.twig', [
-            'page' => $slug
+            'page' => $slug,
+            'product' => $product,
+            'offers' => $offers,
+            'offer' => $offer
         ]);
     }
 
